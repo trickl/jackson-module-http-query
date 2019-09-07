@@ -1,6 +1,8 @@
 # Jackson Module HTTP Query
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.trickl/jackson-module-http-query/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.trickl/jackson-module-http-query)
 [![build_status](https://travis-ci.com/trickl/jackson-module-http-query.svg?branch=master)](https://travis-ci.com/trickl/jackson-module-http-query)
+[![Maintainability](https://api.codeclimate.com/v1/badges/b9266f5831a34c760b3a/maintainability)](https://codeclimate.com/github/trickl/jackson-module-http-query/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/b9266f5831a34c760b3a/test_coverage)](https://codeclimate.com/github/trickl/jackson-module-http-query/test_coverage)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A jackson module for allowing HTTP queries to be represented as typed objects
