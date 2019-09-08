@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryDelimited;
+import com.github.trickl.jackson.module.httpquery.deser.HttpQueryDeserializer;
 import com.github.trickl.jackson.module.httpquery.ser.HttpQueryDelimitedSerializer;
 import com.github.trickl.jackson.module.httpquery.ser.HttpQuerySerializer;
 
@@ -29,6 +30,12 @@ public class HttpQueryAnnotationIntrospector extends AnnotationIntrospector impl
 
   @Override
   public Object findDeserializer(Annotated am) {
+    if (am.hasAnnotation(HttpQuery.class)) {
+      HttpQuery annotation = am.getAnnotation(HttpQuery.class);
+      return new HttpQueryDeserializer(
+          am.getType(),
+          annotation.ignoreUnknown());
+    }
     return null;
   }
 

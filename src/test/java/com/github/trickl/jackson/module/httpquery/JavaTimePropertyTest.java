@@ -33,7 +33,7 @@ public class JavaTimePropertyTest {
   }
 
   @HttpQuery
-  private class JsonFormatQuery {
+  private static class JsonFormatQuery {
     @JsonProperty("param")
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
     private Instant value;

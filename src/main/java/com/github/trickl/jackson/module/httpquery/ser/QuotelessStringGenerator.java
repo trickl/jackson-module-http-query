@@ -1,12 +1,12 @@
-package com.github.trickl.jackson.module.httpquery;
+package com.github.trickl.jackson.module.httpquery.ser;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.SerializableString;
 import com.fasterxml.jackson.core.util.JsonGeneratorDelegate;
 import java.io.IOException;
 
-public class ParamValueGenerator extends JsonGeneratorDelegate {
-  public ParamValueGenerator(JsonGenerator delegate) {
+public class QuotelessStringGenerator extends JsonGeneratorDelegate {
+  public QuotelessStringGenerator(JsonGenerator delegate) {
     super(delegate, true);
   }
 

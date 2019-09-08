@@ -21,7 +21,7 @@ public class JsonPropertyTest {
     objectMapper.registerModule(new HttpQueryModule());
   }
 
-  private class ObjectProperty {    
+  private static class ObjectProperty {    
     private String valueA;
 
     private String valueB;
@@ -33,7 +33,7 @@ public class JsonPropertyTest {
   }
 
   @HttpQuery
-  private class JsonPropertyQuery {
+  private static class JsonPropertyQuery {
     @JsonProperty("param")
     private ObjectProperty value;
 

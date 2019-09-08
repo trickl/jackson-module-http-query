@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.github.trickl.jackson.module.httpquery.ParamValueGenerator;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -53,8 +52,8 @@ public class HttpQueryDelimitedSerializer extends StdSerializer<Collection<?>> {
   private String serialize(Object collectionValue, SerializerProvider provider) throws IOException {
     StringWriter valueWriter = new StringWriter();
     JsonFactory jsonFactory = new JsonFactory();
-    try (ParamValueGenerator valueGenerator =
-        new ParamValueGenerator(jsonFactory.createGenerator(valueWriter))) {
+    try (QuotelessStringGenerator valueGenerator =
+        new QuotelessStringGenerator(jsonFactory.createGenerator(valueWriter))) {
       if (collectionValue == null) {
         provider.defaultSerializeNull(valueGenerator);
       } else {

@@ -22,7 +22,7 @@ public class JsonIgnoreTest {
   }
 
   @HttpQuery
-  private class MultiPropertyQuery {    
+  private static class MultiPropertyQuery {    
     @JsonProperty("paramA")
     private String valueA;
 

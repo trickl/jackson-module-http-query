@@ -20,7 +20,7 @@ public class SinglePropertyTest {
   }
 
   @HttpQuery
-  private class SinglePropertyQuery<T> {
+  private static class SinglePropertyQuery<T> {
     @JsonProperty("param")
     private T value;
 

@@ -30,7 +30,7 @@ public class ListParamTest {
   }
 
   @HttpQuery
-  private class RegularListQuery {    
+  private static class RegularListQuery {    
     @JsonProperty("paramA")
     private List<String> values;
 
@@ -40,7 +40,7 @@ public class ListParamTest {
   }
 
   @HttpQuery
-  private class DelimitedListQuery {    
+  private static class DelimitedListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited
     private List<String> values;
@@ -51,7 +51,7 @@ public class ListParamTest {
   }
 
   @HttpQuery
-  private class DelimitedListNoEncodeQuery {    
+  private static class DelimitedListNoEncodeQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(encodeDelimiter = false)
     private List<String> values;
@@ -62,7 +62,7 @@ public class ListParamTest {
   }
 
   @HttpQuery
-  private class CustomDelimiterListQuery {    
+  private static class CustomDelimiterListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";")
     private List<String> values;
@@ -73,7 +73,7 @@ public class ListParamTest {
   }
 
   @HttpQuery
-  private class CustomDelimiterNoEncodeListQuery {    
+  private static class CustomDelimiterNoEncodeListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";", encodeDelimiter = false)
     private List<String> values;

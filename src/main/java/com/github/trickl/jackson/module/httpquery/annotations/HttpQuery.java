@@ -25,4 +25,10 @@ public @interface HttpQuery {
    * Whether to URI encode parameter values.
    */
   boolean encodeValues() default true;
+
+  /**
+   * Whether to ignore unknown parameters when deserializing.
+   * @return
+   */
+  boolean ignoreUnknown() default true;
 }

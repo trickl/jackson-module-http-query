@@ -48,6 +48,12 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.16</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
     </dependency>
@@ -76,7 +82,6 @@
     <dependency>
         <groupId>com.fasterxml.jackson.module</groupId>
         <artifactId>jackson-module-parameter-names</artifactId>
-        <scope>test</scope>
     </dependency>
     <dependency>
         <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -195,20 +200,6 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.17</version>
         <dependencies>
@@ -237,6 +228,33 @@
     </plugins>
   </build>
   <profiles>
+    <profile>
+        <id>release-sign-artifacts</id>
+        <activation>
+            <property>
+                <name>performRelease</name>
+                <value>!gpg.skip</value>
+            </property>
+        </activation>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.4</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
     <profile>
       <id>testing-profile</id>
       <activation>

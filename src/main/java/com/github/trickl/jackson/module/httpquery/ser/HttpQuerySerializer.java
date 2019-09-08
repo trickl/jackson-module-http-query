@@ -6,8 +6,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.github.trickl.jackson.module.httpquery.BeanPropertyProvider;
-import com.github.trickl.jackson.module.httpquery.ParamValueGenerator;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryDelimited;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,7 +42,7 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
   @Override
   public final void serialize(Object bean, JsonGenerator gen, SerializerProvider provider)
       throws IOException {
-    BeanPropertyProvider beanPropertyProvider = new BeanPropertyProvider(provider);
+    BeanPropertyWriterProvider beanPropertyProvider = new BeanPropertyWriterProvider(provider);
     BeanPropertyWriter[] props =
         beanPropertyProvider.getProperties(javaType).toArray(new BeanPropertyWriter[0]);
 
@@ -80,8 +78,8 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
     String propName = prop.getName();
     String name = encodeNames ? encode(propName) : propName;
 
-    try (ParamValueGenerator valueGenerator =
-        new ParamValueGenerator(jsonFactory.createGenerator(valueWriter))) {
+    try (QuotelessStringGenerator valueGenerator =
+        new QuotelessStringGenerator(jsonFactory.createGenerator(valueWriter))) {
 
       if (propValue == null) {
         if (prop.willSuppressNulls()) {

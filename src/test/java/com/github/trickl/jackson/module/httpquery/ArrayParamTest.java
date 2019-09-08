@@ -29,7 +29,7 @@ public class ArrayParamTest {
   }
 
   @HttpQuery
-  private class RegularArrayQuery {    
+  private static class RegularArrayQuery {    
     @JsonProperty("paramA")
     private String[] values;
 
@@ -39,7 +39,7 @@ public class ArrayParamTest {
   }
 
   @HttpQuery
-  private class DelimitedArrayQuery {    
+  private static class DelimitedArrayQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited
     private String[] values;
@@ -50,7 +50,7 @@ public class ArrayParamTest {
   }
 
   @HttpQuery
-  private class DelimitedArrayNoEncodeQuery {    
+  private static class DelimitedArrayNoEncodeQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(encodeDelimiter = false)
     private String[] values;
@@ -61,7 +61,7 @@ public class ArrayParamTest {
   }
 
   @HttpQuery
-  private class CustomDelimiterArrayQuery {    
+  private static class CustomDelimiterArrayQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";")
     private String[] values;
@@ -72,7 +72,7 @@ public class ArrayParamTest {
   }
 
   @HttpQuery
-  private class CustomDelimiterNoEncodeArrayQuery {    
+  private static class CustomDelimiterNoEncodeArrayQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";", encodeDelimiter = false)
     private String[] values;

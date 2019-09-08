@@ -23,7 +23,7 @@ public class JsonIncludeTest {
   }
 
   @HttpQuery
-  private class MultiPropertyQuery {
+  private static class MultiPropertyQuery {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonProperty("paramA")
     private String valueA;

@@ -25,7 +25,7 @@ public class JsonFormatPropertyTest {
   }
 
   @HttpQuery
-  private class JsonFormatQuery {
+  private static class JsonFormatQuery {
     @JsonProperty("param")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private Date value;
