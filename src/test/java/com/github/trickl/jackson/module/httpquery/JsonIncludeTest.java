@@ -31,35 +31,23 @@ public class JsonIncludeTest {
     @JsonProperty("paramB")
     private String valueB;
 
-    @JsonProperty("paramC")
-    @JsonSerialize(nullsUsing = NullSerializer.class)
-    private String valueC;
-
-    public MultiPropertyQuery(String valueA, String valueB, String valueC) {
+    public MultiPropertyQuery(String valueA, String valueB) {
       this.valueA = valueA;
       this.valueB = valueB;
-      this.valueC = valueC;
     }
   }
 
   @Test
   public void testExcludedNullParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramB=valueB&paramC=valueC",
+    assertEquals("?paramB=valueB",
         objectMapper.writeValueAsString(
-            new MultiPropertyQuery(null, "valueB", "valueC")));
+            new MultiPropertyQuery(null, "valueB")));
   }
 
   @Test
   public void testIncludedNullAsEmptyParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramA=valueA&paramB&paramC=valueC",
+    assertEquals("?paramA=valueA&paramB",
         objectMapper.writeValueAsString(
-            new MultiPropertyQuery("valueA", null, "valueC")));
-  }
-
-  @Test
-  public void testIncludedNullAsNullParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramA=valueA&paramB=valueB&paramC=null",
-        objectMapper.writeValueAsString(
-            new MultiPropertyQuery("valueA", "valueB", null)));
+            new MultiPropertyQuery("valueA", null)));
   }
 }

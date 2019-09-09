@@ -7,12 +7,17 @@ import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.core.json.ReaderBasedJsonParser;
 import com.fasterxml.jackson.core.sym.CharsToNameCanonicalizer;
 import com.fasterxml.jackson.core.util.BufferRecycler;
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyName;
+import com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig;
 import com.fasterxml.jackson.databind.deser.BeanDeserializer;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
+import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -54,9 +59,8 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     if (queryString.startsWith("?")) {
       queryString = queryString.substring(1, queryString.length());
     }
-
-    BeanPropertySetterProvider beanPropertyProvider = new BeanPropertySetterProvider(ctxt);
-    BeanDeserializer beanDeserializer = beanPropertyProvider.getBeanDeserializer(javaType);
+    
+    BeanDeserializer beanDeserializer = getBeanDeserializer(ctxt, javaType);
     ValueInstantiator valueInstantiator = beanDeserializer.getValueInstantiator();
     final Object bean = valueInstantiator.createUsingDefault(ctxt);
 
@@ -115,6 +119,17 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
         getCharsToNameCanonicalizer());
     parser.nextToken();
     prop.deserializeAndSet(parser, ctxt, bean);
+  }
+
+  private BeanDeserializer getBeanDeserializer(
+      DeserializationContext context, JavaType javaType) throws JsonMappingException {
+    DeserializationConfig config = context.getConfig();
+    BeanDescription beanDesc = config.introspect(javaType);
+    BeanDeserializerFactory factory = BeanDeserializerFactory.instance;
+    BeanDeserializer deserializer = (BeanDeserializer)
+        factory.createBeanDeserializer(context, javaType, beanDesc);
+    deserializer.resolve(context);
+    return deserializer;
   }
 
   private IOContext getIoContext() {
