@@ -94,9 +94,8 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
         if (prop.willSuppressNulls()) {
           return false;
         } else {
-          gen.writeRaw(name);
-          return true;
-        }      
+          provider.findNullValueSerializer(prop).serialize(propValue, valueGenerator, provider);
+        }          
       } else if (prop.getType().isTypeOrSubTypeOf(Collection.class) 
           || prop.getType().isArrayType()) {
         Collection<?> collection = Collections.emptyList();

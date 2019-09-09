@@ -11,6 +11,8 @@ import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import lombok.AllArgsConstructor;
+
 public class JsonPropertyTest {
 
   private static ObjectMapper objectMapper;
@@ -21,25 +23,18 @@ public class JsonPropertyTest {
     objectMapper.registerModule(new HttpQueryModule());
   }
 
+  @AllArgsConstructor
   private static class ObjectProperty {    
     private String valueA;
 
     private String valueB;
-
-    public ObjectProperty(String valueA, String valueB) {
-      this.valueA = valueA;
-      this.valueB = valueB;
-    }
   }
 
   @HttpQuery
+  @AllArgsConstructor
   private static class JsonPropertyQuery {
     @JsonProperty("param")
     private ObjectProperty value;
-
-    public JsonPropertyQuery(ObjectProperty value) {
-      this.value = value;
-    }
   }
 
   @Test
