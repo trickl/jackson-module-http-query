@@ -2,6 +2,7 @@ package com.github.trickl.jackson.module.httpquery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,6 +16,9 @@ import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryDelimited
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 public class ListParamTest {
 
@@ -73,6 +77,8 @@ public class ListParamTest {
   }
 
   @HttpQuery
+  @NoArgsConstructor
+  @EqualsAndHashCode
   private static class CustomDelimiterNoEncodeListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";", encodeDelimiter = false)
@@ -116,5 +122,12 @@ public class ListParamTest {
     assertEquals("?paramA=first;second;third",
         objectMapper.writeValueAsString(
             new CustomDelimiterNoEncodeListQuery(EXAMPLE_LIST)));
+  }
+
+  @Test
+  public void testCustomDelimiterNoEncodeListDeserialization() throws IOException {
+    assertEquals(new CustomDelimiterNoEncodeListQuery(EXAMPLE_LIST),
+        objectMapper.readValue("\"?paramA=first;second;third\"",
+            CustomDelimiterNoEncodeListQuery.class));
   }
 }

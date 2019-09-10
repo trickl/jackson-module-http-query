@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryDelimited;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -28,6 +29,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class HttpQueryDeserializer extends StdDeserializer<Object> {
 
@@ -65,8 +73,8 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     final Object bean = valueInstantiator.createUsingDefault(ctxt);
 
     String[] nameValueParams = queryString.split("&");
-    for (String nameValueParam : nameValueParams) {
-      
+    Map<String, List<String>> params = new HashMap<>();
+    for (String nameValueParam : nameValueParams) {      
       String name;
       String value = null;
       if (nameValueParam.contains("=")) {
@@ -76,8 +84,12 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
       } else {
         name = decode(nameValueParam);        
       }
+      params.computeIfAbsent(name, n -> new ArrayList<>());
+      params.get(name).add(value);
+    }
 
-      SettableBeanProperty prop = beanDeserializer.findProperty(new PropertyName(name));
+    for (Map.Entry<String, List<String>> param : params.entrySet()) {
+      SettableBeanProperty prop = beanDeserializer.findProperty(new PropertyName(param.getKey()));
       if (prop == null) {
         if (ignoreUnknown) {
           continue;
@@ -85,12 +97,12 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
           String errorMessage =
               MessageFormat.format(
               "Unknown parameter \"{0}\" supplied.",
-              new Object[] {name});
+              new Object[] {param.getKey()});
           throw new JsonParseException(jp, errorMessage);
         }
       }
 
-      deserializeNameValue(value, prop, jp, ctxt, bean);
+      deserializeNameValue(param.getValue(), prop, jp, ctxt, bean);
     }
 
     return bean;
@@ -104,13 +116,35 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
    * Set an object value using the supplied query param.
    */
   public void deserializeNameValue(
-      String value,
+      List<String> values,
       SettableBeanProperty prop,
       JsonParser p,
       DeserializationContext ctxt,
       Object bean)
       throws IOException {
-    StringReader reader = new StringReader(quoted(value));
+
+    String jsonifiedParam = "";
+    JavaType propType = prop.getType();
+    boolean isArrayOrCollection = 
+        prop.getType().isTypeOrSubTypeOf(Collection.class) 
+        || prop.getType().isArrayType();    
+    if (isArrayOrCollection) {
+      HttpQueryDelimited delimited = prop.getAnnotation(HttpQueryDelimited.class);
+      if (delimited != null) {
+        String lastValue = values.get(values.size() - 1);
+        values = Arrays.asList(lastValue.split(delimited.delimiter()));
+      } 
+      jsonifiedParam = wrapAsArray(values);     
+    } else {
+      String lastValue = values.get(values.size() - 1);
+      if (propType.isPrimitive()) {
+        jsonifiedParam = lastValue;
+      } else {
+        jsonifiedParam = quote(lastValue);
+      }
+    }
+
+    StringReader reader = new StringReader(jsonifiedParam);
     JsonParser parser = new ReaderBasedJsonParser(
         getIoContext(),
         p.getFeatureMask(),
@@ -141,7 +175,12 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     return CharsToNameCanonicalizer.createRoot();
   }
 
-  private String quoted(String value) {
+  private String quote(String value) {
     return '"' + value + '"';
+  }
+
+  private String wrapAsArray(List<String> values) {
+    return "[" + values.stream().map(this::quote)
+        .collect(Collectors.joining(" ,")) + "]";
   }
 }
