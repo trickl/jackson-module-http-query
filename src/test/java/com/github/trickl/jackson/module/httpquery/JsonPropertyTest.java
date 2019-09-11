@@ -1,6 +1,5 @@
 package com.github.trickl.jackson.module.httpquery;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,10 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
+import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import lombok.AllArgsConstructor;
 
 public class JsonPropertyTest {
 
@@ -24,7 +22,7 @@ public class JsonPropertyTest {
   }
 
   @AllArgsConstructor
-  private static class ObjectProperty {    
+  private static class ObjectProperty {
     private String valueA;
 
     private String valueB;
@@ -40,7 +38,8 @@ public class JsonPropertyTest {
   @Test
   public void testNestedParamSerialization() throws JsonProcessingException {
     // Not supported
-    assertThrows(InvalidDefinitionException.class, () ->
-        objectMapper.writeValueAsString(new ObjectProperty("valueA", "valueB")));
+    assertThrows(
+        InvalidDefinitionException.class,
+        () -> objectMapper.writeValueAsString(new ObjectProperty("valueA", "valueB")));
   }
 }

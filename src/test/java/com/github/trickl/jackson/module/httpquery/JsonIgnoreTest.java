@@ -2,20 +2,17 @@ package com.github.trickl.jackson.module.httpquery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class JsonIgnoreTest {
 
@@ -45,14 +42,15 @@ public class JsonIgnoreTest {
 
   @Test
   public void testIgnoreParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramA=valueA&paramC=123",
+    assertEquals(
+        "?paramA=valueA&paramC=123",
         objectMapper.writeValueAsString(new MultiPropertyQuery("valueA", "valueB", 123)));
   }
 
   @Test
   public void testIgnoreParamDeserialization() throws IOException {
-    assertEquals(new MultiPropertyQuery("valueA", null, 123),
-        objectMapper.readValue("\"?paramA=valueA&paramC=123\"",
-            MultiPropertyQuery.class));
+    assertEquals(
+        new MultiPropertyQuery("valueA", null, 123),
+        objectMapper.readValue("\"?paramA=valueA&paramC=123\"", MultiPropertyQuery.class));
   }
 }

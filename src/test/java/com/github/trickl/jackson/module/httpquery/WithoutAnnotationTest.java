@@ -2,16 +2,14 @@ package com.github.trickl.jackson.module.httpquery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
+import java.io.IOException;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class WithoutAnnotationTest {
 
@@ -36,13 +34,14 @@ public class WithoutAnnotationTest {
 
   @Test
   public void testSerializesAsExpected() throws JsonProcessingException {
-    assertEquals("{\"param\":\"value\"}", 
-        objectMapper.writeValueAsString(new SinglePropertyQuery("value")));
+    assertEquals(
+        "{\"param\":\"value\"}", objectMapper.writeValueAsString(new SinglePropertyQuery("value")));
   }
 
   @Test
   public void testDeserializesAsExpected() throws IOException {
-    assertEquals(new SinglePropertyQuery("value"),
+    assertEquals(
+        new SinglePropertyQuery("value"),
         objectMapper.readValue("{\"param\":\"value\"}", SinglePropertyQuery.class));
   }
 }

@@ -2,23 +2,19 @@ package com.github.trickl.jackson.module.httpquery;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.NullSerializer;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
+import java.io.IOException;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-public class JsonNullsTest {
+public class NullsTest {
 
   private static ObjectMapper objectMapper;
 
@@ -43,29 +39,27 @@ public class JsonNullsTest {
 
   @Test
   public void testExcludedNullParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramB=123",
-        objectMapper.writeValueAsString(
-            new MultiPropertyQuery(null, 123)));
+    assertEquals("?paramB=123", objectMapper.writeValueAsString(new MultiPropertyQuery(null, 123)));
   }
 
   @Test
   public void testIncludedNullAsEmptyParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramA=valueA&paramB=null",
-        objectMapper.writeValueAsString(
-            new MultiPropertyQuery("valueA", null)));
+    assertEquals(
+        "?paramA=valueA&paramB=null",
+        objectMapper.writeValueAsString(new MultiPropertyQuery("valueA", null)));
   }
 
   @Test
   public void testExcludedNullParamDeserialization() throws IOException {
-    assertEquals(new MultiPropertyQuery(null, 123),
-        objectMapper.readValue("\"?paramB=123\"",
-        MultiPropertyQuery.class));
+    assertEquals(
+        new MultiPropertyQuery(null, 123),
+        objectMapper.readValue("\"?paramB=123\"", MultiPropertyQuery.class));
   }
 
   @Test
   public void testIncludeNullAsEmptyParamDeserialization() throws IOException {
-    assertEquals(new MultiPropertyQuery("valueA", null),
-        objectMapper.readValue("\"?paramA=valueA&paramB=null\"",
-        MultiPropertyQuery.class));
+    assertEquals(
+        new MultiPropertyQuery("valueA", null),
+        objectMapper.readValue("\"?paramA=valueA&paramB=null\"", MultiPropertyQuery.class));
   }
 }

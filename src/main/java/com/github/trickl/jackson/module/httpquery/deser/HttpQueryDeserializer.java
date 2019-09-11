@@ -14,15 +14,13 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.PropertyName;
-import com.fasterxml.jackson.databind.cfg.DeserializerFactoryConfig;
 import com.fasterxml.jackson.databind.deser.BeanDeserializer;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerBuilder;
 import com.fasterxml.jackson.databind.deser.BeanDeserializerFactory;
 import com.fasterxml.jackson.databind.deser.SettableBeanProperty;
 import com.fasterxml.jackson.databind.deser.ValueInstantiator;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryDelimited;
-
+import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryNoValue;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
@@ -49,10 +47,7 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
 
   /** Create a deserializer for converting a Http query string to a typed object. */
   public HttpQueryDeserializer(
-      JavaType javaType,
-      boolean ignoreUnknown,
-      boolean decodeNames,
-      boolean decodeValues) {
+      JavaType javaType, boolean ignoreUnknown, boolean decodeNames, boolean decodeValues) {
     super(Object.class);
     this.javaType = javaType;
     this.ignoreUnknown = ignoreUnknown;
@@ -76,23 +71,23 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     if (queryString.startsWith("?")) {
       queryString = queryString.substring(1, queryString.length());
     }
-    
+
     BeanDeserializer beanDeserializer = getBeanDeserializer(ctxt, javaType);
     ValueInstantiator valueInstantiator = beanDeserializer.getValueInstantiator();
     final Object bean = valueInstantiator.createUsingDefault(ctxt);
 
     String[] nameValueParams = queryString.split("&");
     Map<String, List<String>> params = new HashMap<>();
-    for (String nameValueParam : nameValueParams) {      
+    for (String nameValueParam : nameValueParams) {
       String name;
       String encodedValue = null;
       if (nameValueParam.contains("=")) {
         String encodedName = nameValueParam.substring(0, nameValueParam.indexOf('='));
         name = decodeNames ? decode(encodedName) : encodedName;
-        encodedValue = nameValueParam.substring(
-            nameValueParam.indexOf('=') + 1, nameValueParam.length());              
+        encodedValue =
+            nameValueParam.substring(nameValueParam.indexOf('=') + 1, nameValueParam.length());
       } else {
-        name = decodeNames ? decode(nameValueParam) : nameValueParam;        
+        name = decodeNames ? decode(nameValueParam) : nameValueParam;
       }
       params.computeIfAbsent(name, n -> new ArrayList<>());
       params.get(name).add(encodedValue);
@@ -106,8 +101,7 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
         } else {
           String errorMessage =
               MessageFormat.format(
-              "Unknown parameter \"{0}\" supplied.",
-              new Object[] {param.getKey()});
+                  "Unknown parameter \"{0}\" supplied.", new Object[] {param.getKey()});
           throw new JsonParseException(jp, errorMessage);
         }
       }
@@ -126,9 +120,7 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
   }
 
-  /**
-   * Set an object value using the supplied query param.
-   */
+  /** Set an object value using the supplied query param. */
   public void deserializeNameValue(
       List<String> encodedValues,
       SettableBeanProperty prop,
@@ -139,9 +131,8 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
 
     String jsonifiedParam = "";
     JavaType propType = prop.getType();
-    boolean isArrayOrCollection = 
-        prop.getType().isTypeOrSubTypeOf(Collection.class) 
-        || prop.getType().isArrayType();    
+    boolean isArrayOrCollection =
+        prop.getType().isTypeOrSubTypeOf(Collection.class) || prop.getType().isArrayType();
     if (isArrayOrCollection) {
       boolean shouldDecode = decodeValues;
       HttpQueryDelimited delimited = prop.getAnnotation(HttpQueryDelimited.class);
@@ -150,7 +141,7 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
         String delimiter = delimited.delimiter();
         shouldDecode = delimited.encodeValues();
         String encodedDelimiter = delimited.encodeDelimiter() ? encode(delimiter) : delimiter;
-        encodedValues = Arrays.asList(lastValue.split(encodedDelimiter));        
+        encodedValues = Arrays.asList(lastValue.split(encodedDelimiter));
       }
 
       List<String> decodedValues = new ArrayList<>();
@@ -159,11 +150,16 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
         decodedValues.add(decodedValue);
       }
 
-      jsonifiedParam = wrapAsArray(encodedValues);     
+      jsonifiedParam = wrapAsArray(encodedValues);
     } else {
-      String encodedLastValue = encodedValues.get(encodedValues.size() - 1);      
-      String lastValue = decodeValues ? decode(encodedLastValue) : encodedLastValue;
-      if (propType.isPrimitive()) {
+      String encodedLastValue = encodedValues.get(encodedValues.size() - 1);
+      String lastValue = decodeValues && encodedLastValue != null 
+          ? decode(encodedLastValue) : encodedLastValue;
+
+      HttpQueryNoValue annotatedNoValue = prop.getAnnotation(HttpQueryNoValue.class);
+      if (annotatedNoValue != null) {
+        jsonifiedParam = "true";
+      } else if (propType.isPrimitive()) {
         jsonifiedParam = lastValue;
       } else {
         jsonifiedParam = quote(lastValue);
@@ -171,23 +167,24 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     }
 
     StringReader reader = new StringReader(jsonifiedParam);
-    JsonParser parser = new ReaderBasedJsonParser(
-        getIoContext(),
-        p.getFeatureMask(),
-        reader,
-        p.getCodec(),
-        getCharsToNameCanonicalizer());
+    JsonParser parser =
+        new ReaderBasedJsonParser(
+            getIoContext(),
+            p.getFeatureMask(),
+            reader,
+            p.getCodec(),
+            getCharsToNameCanonicalizer());
     parser.nextToken();
     prop.deserializeAndSet(parser, ctxt, bean);
   }
 
-  private BeanDeserializer getBeanDeserializer(
-      DeserializationContext context, JavaType javaType) throws JsonMappingException {
+  private BeanDeserializer getBeanDeserializer(DeserializationContext context, JavaType javaType)
+      throws JsonMappingException {
     DeserializationConfig config = context.getConfig();
     BeanDescription beanDesc = config.introspect(javaType);
     BeanDeserializerFactory factory = BeanDeserializerFactory.instance;
-    BeanDeserializer deserializer = (BeanDeserializer)
-        factory.createBeanDeserializer(context, javaType, beanDesc);
+    BeanDeserializer deserializer =
+        (BeanDeserializer) factory.createBeanDeserializer(context, javaType, beanDesc);
     deserializer.resolve(context);
     return deserializer;
   }
@@ -206,7 +203,6 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
   }
 
   private String wrapAsArray(List<String> values) {
-    return "[" + values.stream().map(this::quote)
-        .collect(Collectors.joining(" ,")) + "]";
+    return "[" + values.stream().map(this::quote).collect(Collectors.joining(" ,")) + "]";
   }
 }
