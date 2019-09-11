@@ -34,7 +34,9 @@ public class HttpQueryAnnotationIntrospector extends AnnotationIntrospector impl
       HttpQuery annotation = am.getAnnotation(HttpQuery.class);
       return new HttpQueryDeserializer(
           am.getType(),
-          annotation.ignoreUnknown());
+          annotation.ignoreUnknown(),
+          annotation.encodeNames(),
+          annotation.encodeValues());
     }
     return null;
   }

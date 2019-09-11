@@ -85,6 +85,7 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
     StringWriter valueWriter = new StringWriter();
     Object propValue = prop.get(bean);
     String propName = prop.getName();
+    JavaType propType = prop.getType();
     String name = encodeNames ? encode(propName) : propName;
 
     try (QuotelessStringGenerator valueGenerator =
@@ -96,10 +97,10 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
         } else {
           provider.findNullValueSerializer(prop).serialize(propValue, valueGenerator, provider);
         }          
-      } else if (prop.getType().isTypeOrSubTypeOf(Collection.class) 
-          || prop.getType().isArrayType()) {
+      } else if (propType.isTypeOrSubTypeOf(Collection.class) 
+          || propType.isArrayType()) {
         Collection<?> collection = Collections.emptyList();
-        if (prop.getType().isTypeOrSubTypeOf(Collection.class)) {
+        if (propType.isTypeOrSubTypeOf(Collection.class)) {
           collection = (Collection<?>) propValue;
         } else {
           AtomicInteger index = new AtomicInteger(0);
@@ -113,7 +114,7 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
         if (annotatedList != null) {
           HttpQueryDelimitedSerializer serializer =
               new HttpQueryDelimitedSerializer(
-                  prop.getType(),
+                  propType,
                   annotatedList.delimiter(),
                   annotatedList.encodeDelimiter(),
                   encodeValues);

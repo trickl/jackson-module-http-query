@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 public class ListParamTest {
 
@@ -34,6 +35,9 @@ public class ListParamTest {
   }
 
   @HttpQuery
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  @ToString
   private static class RegularListQuery {    
     @JsonProperty("paramA")
     private List<String> values;
@@ -44,6 +48,9 @@ public class ListParamTest {
   }
 
   @HttpQuery
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  @ToString
   private static class DelimitedListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited
@@ -55,6 +62,9 @@ public class ListParamTest {
   }
 
   @HttpQuery
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  @ToString
   private static class DelimitedListNoEncodeQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(encodeDelimiter = false)
@@ -66,6 +76,9 @@ public class ListParamTest {
   }
 
   @HttpQuery
+  @NoArgsConstructor
+  @EqualsAndHashCode
+  @ToString
   private static class CustomDelimiterListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";")
@@ -79,6 +92,7 @@ public class ListParamTest {
   @HttpQuery
   @NoArgsConstructor
   @EqualsAndHashCode
+  @ToString
   private static class CustomDelimiterNoEncodeListQuery {    
     @JsonProperty("paramA")
     @HttpQueryDelimited(delimiter = ";", encodeDelimiter = false)
@@ -97,10 +111,24 @@ public class ListParamTest {
   }
 
   @Test
+  public void testRegularListDeserialization() throws IOException {
+    assertEquals(new RegularListQuery(EXAMPLE_LIST),
+        objectMapper.readValue("\"?paramA=first&paramA=second&paramA=third\"",
+        RegularListQuery.class));
+  }
+
+  @Test
   public void testDelimitedListSerialization() throws JsonProcessingException {
     assertEquals("?paramA=first%2Csecond%2Cthird",
         objectMapper.writeValueAsString(
             new DelimitedListQuery(EXAMPLE_LIST)));
+  }
+
+  @Test
+  public void testDelimitedListDeserialization() throws IOException {
+    assertEquals(new DelimitedListQuery(EXAMPLE_LIST),
+        objectMapper.readValue("\"?paramA=first%2Csecond%2Cthird\"",
+        DelimitedListQuery.class));
   }
 
   @Test
@@ -111,10 +139,24 @@ public class ListParamTest {
   }
 
   @Test
+  public void testDelimitedListNoEncodeDeserialization() throws IOException {
+    assertEquals(new DelimitedListNoEncodeQuery(EXAMPLE_LIST),
+        objectMapper.readValue("\"?paramA=first,second,third\"",
+        DelimitedListNoEncodeQuery.class));
+  }
+
+  @Test
   public void testCustomDelimiterListSerialization() throws JsonProcessingException {
     assertEquals("?paramA=first%3Bsecond%3Bthird",
         objectMapper.writeValueAsString(
             new CustomDelimiterListQuery(EXAMPLE_LIST)));
+  }
+
+  @Test
+  public void testCustomDelimiterListDeserialization() throws IOException {
+    assertEquals(new CustomDelimiterListQuery(EXAMPLE_LIST),
+        objectMapper.readValue("\"?paramA=first%3Bsecond%3Bthird\"",
+            CustomDelimiterListQuery.class));
   }
 
   @Test

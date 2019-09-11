@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -43,12 +44,20 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
 
   private final JavaType javaType;
   private final boolean ignoreUnknown;
+  private final boolean decodeNames;
+  private final boolean decodeValues;
 
   /** Create a deserializer for converting a Http query string to a typed object. */
-  public HttpQueryDeserializer(JavaType javaType, boolean ignoreUnknown) {
+  public HttpQueryDeserializer(
+      JavaType javaType,
+      boolean ignoreUnknown,
+      boolean decodeNames,
+      boolean decodeValues) {
     super(Object.class);
     this.javaType = javaType;
     this.ignoreUnknown = ignoreUnknown;
+    this.decodeNames = decodeNames;
+    this.decodeValues = decodeValues;
   }
 
   @Override
@@ -76,16 +85,17 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     Map<String, List<String>> params = new HashMap<>();
     for (String nameValueParam : nameValueParams) {      
       String name;
-      String value = null;
+      String encodedValue = null;
       if (nameValueParam.contains("=")) {
-        name = decode(nameValueParam.substring(0, nameValueParam.indexOf('=')));
-        value = decode(nameValueParam.substring(
-            nameValueParam.indexOf('=') + 1, nameValueParam.length()));              
+        String encodedName = nameValueParam.substring(0, nameValueParam.indexOf('='));
+        name = decodeNames ? decode(encodedName) : encodedName;
+        encodedValue = nameValueParam.substring(
+            nameValueParam.indexOf('=') + 1, nameValueParam.length());              
       } else {
-        name = decode(nameValueParam);        
+        name = decodeNames ? decode(nameValueParam) : nameValueParam;        
       }
       params.computeIfAbsent(name, n -> new ArrayList<>());
-      params.get(name).add(value);
+      params.get(name).add(encodedValue);
     }
 
     for (Map.Entry<String, List<String>> param : params.entrySet()) {
@@ -112,11 +122,15 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
   }
 
+  private String encode(String value) throws UnsupportedEncodingException {
+    return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+  }
+
   /**
    * Set an object value using the supplied query param.
    */
   public void deserializeNameValue(
-      List<String> values,
+      List<String> encodedValues,
       SettableBeanProperty prop,
       JsonParser p,
       DeserializationContext ctxt,
@@ -129,14 +143,26 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
         prop.getType().isTypeOrSubTypeOf(Collection.class) 
         || prop.getType().isArrayType();    
     if (isArrayOrCollection) {
+      boolean shouldDecode = decodeValues;
       HttpQueryDelimited delimited = prop.getAnnotation(HttpQueryDelimited.class);
       if (delimited != null) {
-        String lastValue = values.get(values.size() - 1);
-        values = Arrays.asList(lastValue.split(delimited.delimiter()));
-      } 
-      jsonifiedParam = wrapAsArray(values);     
+        String lastValue = encodedValues.get(encodedValues.size() - 1);
+        String delimiter = delimited.delimiter();
+        shouldDecode = delimited.encodeValues();
+        String encodedDelimiter = delimited.encodeDelimiter() ? encode(delimiter) : delimiter;
+        encodedValues = Arrays.asList(lastValue.split(encodedDelimiter));        
+      }
+
+      List<String> decodedValues = new ArrayList<>();
+      for (String encodedValue : encodedValues) {
+        String decodedValue = shouldDecode ? decode(encodedValue) : encodedValue;
+        decodedValues.add(decodedValue);
+      }
+
+      jsonifiedParam = wrapAsArray(encodedValues);     
     } else {
-      String lastValue = values.get(values.size() - 1);
+      String encodedLastValue = encodedValues.get(encodedValues.size() - 1);      
+      String lastValue = decodeValues ? decode(encodedLastValue) : encodedLastValue;
       if (propType.isPrimitive()) {
         jsonifiedParam = lastValue;
       } else {
