@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.trickl</groupId>
   <artifactId>jackson.module.httpquery</artifactId>
-  <version>0.5.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <developers>
     <developer>
