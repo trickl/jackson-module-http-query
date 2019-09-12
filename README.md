@@ -16,7 +16,7 @@ To install from Maven Central:
 <dependency>
   <groupId>com.github.trickl</groupId>
   <artifactId>jackson-module-http-query</artifactId>
-  <version>0.0.1</version>
+  <version>1.0.0</version>
 </dependency>
 ```
 ### Registering module
@@ -30,6 +30,39 @@ mapper.registerModule(new HttpQueryModule());
 
 after which functionality is available for all normal Jackson operations.
 
+### Purpose
+
+Converts POJOs to query strings and vice versa. 
+
+* Use type objects for convenient conversion to query strings (and back).
+* Less boilerplate code required for supporting a variety of query combinations.
+* Supports existing Jackson JSON annotations for formatting.
+* Extra annotations allow for different strategies on handling multi-valued parameters.
+
 ### Usage Example
 
-TODO!
+```java
+@HttpQuery
+private static class TypedExample {
+    private String valueA;
+
+    private String valueB;
+
+    private int valueC;
+}
+
+// To produce "?valueA=test&valueB=testB&valueC=123"...
+TypedQuery typed = new TypedQuery(... // omitted for brevity
+String queryString = objectMapper.writeValueAsString(typedQuery);
+```
+
+### Features
+
+* Supports many Jackson annotations
+  - @JsonProperty (have a different query parameter name from the variable name).
+  - @JsonIgnore (don't serialize a property)
+  - @JsonFormat (useful for date strings).
+* Supports new parameters
+  - @HttpQuery (required to serialize to a query string, not a JSON object).
+  - @HttpQueryDelimited (serialize a multi valued property using a delimited list e.g "?values=1,2,3").
+  - @HttpQueryNoValue (allow boolean valueless params, e.g. "?debug")
