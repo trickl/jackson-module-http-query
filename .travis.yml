@@ -18,7 +18,6 @@ before_script:
 - ".travis/before-script.sh"
 script:
 - mvn test
-after_script:
 - "./cc-test-reporter format-coverage -d -t jacoco ./target/jacoco-ut/jacoco.xml"
 - "./cc-test-reporter upload-coverage -d"
 before_deploy:
@@ -33,6 +32,7 @@ deploy:
     repo: trickl/jackson-module-http-query
     all_branches: true
 - provider: releases
+  skip_cleanup: true
   api_key:
     secure: HwlULTmI+7vCZmWViJAYV7AZcvJyjp/K92LByi6115+JxvzRmEh3p/RnuW6rGOKMgRnMDABGA2bm8ujlnqh9DuXU4BIxKh/yM/AzNhelJIjVRbnL7q1zn7oWe838Uu5tTs2Mjvflhm1sNawfKQxk5/1NmleKfmBlh65+WG9jh2Q+EZfhu/FRAXHRQGtgGHfVC9KASE+JAi14C46XYQwIVOztWJLoUG/me/GROypRnjeiZPPPARZ/cQLN7kJKCYtCYYtwM7R3QFXLZ/qowdG5O/NzCOJnrCK6eknX679Ql5+hzD4hXGPAMjnwdcd0GdjbIVQ1m4KqJrmnziWBpwk9BVJGeHHPYGQR/GcGcVx/WwLOwxV5f/KshhbVKG9akwic4nyKK7x6WfDM4rxf9jQuYRHmLD00qIGx4U/tsfVLsz4uici8hpD1ieH4SS41MrEzDzbvUTlMxrMAxE/76vFruZHMth8NGHvodOlGuQefm3hWAG/JuwCa1BFSbxUcw5iIRlx2EqCHpd+Hqa31F43KuqX8fQ1FMQvnwcwashq9yhIV1KTNL1g0LzBpZy4ItLICIzW0k4cvMwswKblgwumfXnr7ETaqMJofwCke7cUkDAkfDMVvD1ETDpUwz20k7RmgRYJmrVvQBsbnGBSIA5+70ob4KyiUNMij2lD5hH5V0x0=
   file: ".travis.yml"
