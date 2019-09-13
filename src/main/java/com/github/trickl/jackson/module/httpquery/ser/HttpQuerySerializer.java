@@ -1,5 +1,6 @@
 package com.github.trickl.jackson.module.httpquery.ser;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -130,7 +131,7 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
           }
 
           HttpQueryDelimited annotatedList = prop.findAnnotation(HttpQueryDelimited.class);
-          if (annotatedList != null) {
+          if (annotatedList != null && !collection.isEmpty()) {             
             HttpQueryDelimitedSerializer serializer =
                 new HttpQueryDelimitedSerializer(
                     propType,
