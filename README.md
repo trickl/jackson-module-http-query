@@ -53,7 +53,7 @@ private static class TypedExample {
 
 // To produce "?valueA=test&valueB=testB&valueC=123"...
 TypedQuery typed = new TypedQuery(... // omitted for brevity
-String queryString = objectMapper.writeValueAsString(typedQuery);
+String queryString = objectMapper.valueToTree(typedQuery).textValue();
 ```
 
 ### Features

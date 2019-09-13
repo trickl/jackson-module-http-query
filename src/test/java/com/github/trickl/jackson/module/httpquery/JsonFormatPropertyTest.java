@@ -42,7 +42,7 @@ public class JsonFormatPropertyTest {
     Calendar calendar = new GregorianCalendar(2013, 0, 31);
     assertEquals(
         "?param=2013-01-31",
-        objectMapper.writeValueAsString(new JsonFormatQuery(calendar.getTime())));
+        objectMapper.valueToTree(new JsonFormatQuery(calendar.getTime())).textValue());
   }
 
   @Test

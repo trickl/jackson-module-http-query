@@ -99,7 +99,7 @@ public class ArrayParamTest {
   public void testRegularArraySerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first&paramA=second&paramA=third",
-        objectMapper.writeValueAsString(new RegularArrayQuery(EXAMPLE_ARRAY)));
+        objectMapper.valueToTree(new RegularArrayQuery(EXAMPLE_ARRAY)).textValue());
   }
 
   @Test
@@ -114,7 +114,7 @@ public class ArrayParamTest {
   public void testDelimitedArraySerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first%2Csecond%2Cthird",
-        objectMapper.writeValueAsString(new DelimitedArrayQuery(EXAMPLE_ARRAY)));
+        objectMapper.valueToTree(new DelimitedArrayQuery(EXAMPLE_ARRAY)).textValue());
   }
 
   @Test
@@ -128,7 +128,7 @@ public class ArrayParamTest {
   public void testDelimitedArrayNoEncodeSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first,second,third",
-        objectMapper.writeValueAsString(new DelimitedArrayNoEncodeQuery(EXAMPLE_ARRAY)));
+        objectMapper.valueToTree(new DelimitedArrayNoEncodeQuery(EXAMPLE_ARRAY)).textValue());
   }
 
   @Test
@@ -143,7 +143,7 @@ public class ArrayParamTest {
   public void testCustomDelimiterArraySerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first%3Bsecond%3Bthird",
-        objectMapper.writeValueAsString(new CustomDelimiterArrayQuery(EXAMPLE_ARRAY)));
+        objectMapper.valueToTree(new CustomDelimiterArrayQuery(EXAMPLE_ARRAY)).textValue());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class ArrayParamTest {
   public void testCustomDelimiterNoEncodeArraySerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first;second;third",
-        objectMapper.writeValueAsString(new CustomDelimiterNoEncodeArrayQuery(EXAMPLE_ARRAY)));
+        objectMapper.valueToTree(new CustomDelimiterNoEncodeArrayQuery(EXAMPLE_ARRAY)).textValue());
   }
 
   @Test

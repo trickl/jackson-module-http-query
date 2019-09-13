@@ -48,7 +48,7 @@ public class MultiPropertyTest {
   public void testMultiParamSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=valueA&paramB=valueB&paramC=123",
-        objectMapper.writeValueAsString(new MultiPropertyQuery("valueA", "valueB", 123)));
+        objectMapper.valueToTree(new MultiPropertyQuery("valueA", "valueB", 123)).textValue());
   }
 
   @Test

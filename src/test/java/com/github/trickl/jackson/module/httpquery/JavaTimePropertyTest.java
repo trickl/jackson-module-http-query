@@ -46,7 +46,7 @@ public class JavaTimePropertyTest {
   public void testStringParamSerialization() throws JsonProcessingException {
     assertEquals(
         "?param=2013-01-31",
-        objectMapper.writeValueAsString(new JsonFormatQuery(LocalDate.parse("2013-01-31"))));
+        objectMapper.valueToTree(new JsonFormatQuery(LocalDate.parse("2013-01-31"))).textValue());
   }
 
   @Test

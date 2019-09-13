@@ -32,21 +32,21 @@ public class SinglePropertyTest {
   @Test
   public void testStringParamSerialization() throws JsonProcessingException {
     assertEquals(
-        "?param=value", objectMapper.writeValueAsString(new SinglePropertyQuery<>("value")));
+        "?param=value", objectMapper.valueToTree(new SinglePropertyQuery<>("value")).textValue());
   }
 
   @Test
   public void testIntegerParamSerialization() throws JsonProcessingException {
-    assertEquals("?param=123", objectMapper.writeValueAsString(new SinglePropertyQuery<>(123)));
+    assertEquals("?param=123", objectMapper.valueToTree(new SinglePropertyQuery<>(123)).textValue());
   }
 
   @Test
   public void testLongParamSerialization() throws JsonProcessingException {
-    assertEquals("?param=123", objectMapper.writeValueAsString(new SinglePropertyQuery<>(123L)));
+    assertEquals("?param=123", objectMapper.valueToTree(new SinglePropertyQuery<>(123L)).textValue());
   }
 
   @Test
   public void testBooleanParamSerialization() throws JsonProcessingException {
-    assertEquals("?param=true", objectMapper.writeValueAsString(new SinglePropertyQuery<>(true)));
+    assertEquals("?param=true", objectMapper.valueToTree(new SinglePropertyQuery<>(true)).textValue());
   }
 }

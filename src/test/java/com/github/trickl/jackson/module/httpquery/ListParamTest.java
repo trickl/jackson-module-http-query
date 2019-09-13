@@ -101,7 +101,7 @@ public class ListParamTest {
   public void testRegularListSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first&paramA=second&paramA=third",
-        objectMapper.writeValueAsString(new RegularListQuery(EXAMPLE_LIST)));
+        objectMapper.valueToTree(new RegularListQuery(EXAMPLE_LIST)).textValue());
   }
 
   @Test
@@ -116,7 +116,7 @@ public class ListParamTest {
   public void testDelimitedListSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first%2Csecond%2Cthird",
-        objectMapper.writeValueAsString(new DelimitedListQuery(EXAMPLE_LIST)));
+        objectMapper.valueToTree(new DelimitedListQuery(EXAMPLE_LIST)).textValue());
   }
 
   @Test
@@ -130,7 +130,7 @@ public class ListParamTest {
   public void testDelimitedListNoEncodeSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first,second,third",
-        objectMapper.writeValueAsString(new DelimitedListNoEncodeQuery(EXAMPLE_LIST)));
+        objectMapper.valueToTree(new DelimitedListNoEncodeQuery(EXAMPLE_LIST)).textValue());
   }
 
   @Test
@@ -144,7 +144,7 @@ public class ListParamTest {
   public void testCustomDelimiterListSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first%3Bsecond%3Bthird",
-        objectMapper.writeValueAsString(new CustomDelimiterListQuery(EXAMPLE_LIST)));
+        objectMapper.valueToTree(new CustomDelimiterListQuery(EXAMPLE_LIST)).textValue());
   }
 
   @Test
@@ -159,7 +159,7 @@ public class ListParamTest {
   public void testCustomDelimiterNoEncodeListSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=first;second;third",
-        objectMapper.writeValueAsString(new CustomDelimiterNoEncodeListQuery(EXAMPLE_LIST)));
+        objectMapper.valueToTree(new CustomDelimiterNoEncodeListQuery(EXAMPLE_LIST)).textValue());
   }
 
   @Test

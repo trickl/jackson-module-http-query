@@ -39,7 +39,7 @@ public class JsonPropertyTest {
   public void testNestedParamSerialization() throws JsonProcessingException {
     // Not supported
     assertThrows(
-        InvalidDefinitionException.class,
-        () -> objectMapper.writeValueAsString(new ObjectProperty("valueA", "valueB")));
+        IllegalArgumentException.class,
+        () -> objectMapper.valueToTree(new ObjectProperty("valueA", "valueB")).textValue());
   }
 }

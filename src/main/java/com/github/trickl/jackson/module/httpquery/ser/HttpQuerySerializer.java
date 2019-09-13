@@ -16,6 +16,7 @@ import com.github.trickl.jackson.module.httpquery.annotations.HttpQueryNoValue;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -54,98 +55,111 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
     beanSerializer.properties().forEachRemaining((prop) -> propList.add((BeanPropertyWriter) prop));
     BeanPropertyWriter[] props = propList.toArray(new BeanPropertyWriter[0]);
 
+    List<String> nameValueParams = new ArrayList<>();
     int i = 0;
-    boolean propertyWritten = false;
     try {
       for (final int len = props.length; i < len; ++i) {
-        if (i == 0 && includeQuestionMark) {
-          gen.writeRaw("?");
-        } else if (propertyWritten) {
-          gen.writeRaw("&");
-        }
-
         BeanPropertyWriter prop = props[i];
         if (prop != null) { // can have nulls in filtered list
-          propertyWritten = serializeAsNameValue(bean, prop, gen, provider);
+          String nameValueParam = writeNameValueAsString(bean, prop, provider);
+          if (nameValueParam != null && nameValueParam.length() > 0) {
+            nameValueParams.add(nameValueParam);
+          }
         }
       }
     } catch (Exception e) {
       String name = (i == props.length) ? "[anySetter]" : props[i].getName();
       wrapAndThrow(provider, e, bean, name);
     }
+
+    String query = nameValueParams.stream().collect(Collectors.joining("&"));
+    if (includeQuestionMark) {
+      query = "?" + query;
+    }
+    gen.writeString(query);
   }
 
   /** Write a property out as "name=value". */
-  public boolean serializeAsNameValue(
-      Object bean, BeanPropertyWriter prop, JsonGenerator gen, SerializerProvider provider)
+  public String writeNameValueAsString(
+      Object bean, BeanPropertyWriter prop, SerializerProvider provider) throws Exception {
+    StringWriter writer = new StringWriter();
+    writeNameValue(writer, bean, prop, provider);
+    return writer.toString();
+  }
+
+  /** Write a property out as "name=value". */
+  public void writeNameValue(
+      Writer nameValueWriter, Object bean, BeanPropertyWriter prop, SerializerProvider provider)
       throws Exception {
+
     JsonFactory jsonFactory = new JsonFactory();
-    StringWriter valueWriter = new StringWriter();
     Object propValue = prop.get(bean);
     String propName = prop.getName();
     JavaType propType = prop.getType();
     String name = encodeNames ? encode(propName) : propName;
 
-    try (QuotelessStringGenerator valueGenerator =
-        new QuotelessStringGenerator(jsonFactory.createGenerator(valueWriter))) {
+    StringWriter valueWriter = new StringWriter();
+    try (JsonGenerator gen = jsonFactory.createGenerator(nameValueWriter)) {
+      try (QuotelessStringGenerator valueGenerator =
+          new QuotelessStringGenerator(jsonFactory.createGenerator(valueWriter))) {
 
-      HttpQueryNoValue annotatedNoValue = prop.findAnnotation(HttpQueryNoValue.class);
-      if (annotatedNoValue != null) {
-        if (propValue != null && !Boolean.FALSE.equals(propValue)) {
-          gen.writeRaw(name);
-          return true;
-        } else {
-          return false;
-        }
-      } else if (propValue == null) {
-        if (prop.willSuppressNulls()) {
-          return false;
-        } else {
-          provider.findNullValueSerializer(prop).serialize(propValue, valueGenerator, provider);
-        }
-      } else if (propType.isTypeOrSubTypeOf(Collection.class) || propType.isArrayType()) {
-        Collection<?> collection = Collections.emptyList();
-        if (propType.isTypeOrSubTypeOf(Collection.class)) {
-          collection = (Collection<?>) propValue;
-        } else {
-          AtomicInteger index = new AtomicInteger(0);
-          collection =
-              Stream.generate(() -> Array.get(propValue, index.getAndIncrement()))
-                  .limit(Array.getLength(propValue))
-                  .collect(Collectors.toList());
-        }
+        HttpQueryNoValue annotatedNoValue = prop.findAnnotation(HttpQueryNoValue.class);
+        if (annotatedNoValue != null) {
+          if (propValue != null && !Boolean.FALSE.equals(propValue)) {
+            gen.writeRaw(name);
+            return;
+          } else {
+            return;
+          }
+        } else if (propValue == null) {
+          if (prop.willSuppressNulls()) {
+            return;
+          } else {
+            provider.findNullValueSerializer(prop).serialize(propValue, valueGenerator, provider);
+          }
+        } else if (propType.isTypeOrSubTypeOf(Collection.class) || propType.isArrayType()) {
+          Collection<?> collection = Collections.emptyList();
+          if (propType.isTypeOrSubTypeOf(Collection.class)) {
+            collection = (Collection<?>) propValue;
+          } else {
+            AtomicInteger index = new AtomicInteger(0);
+            collection =
+                Stream.generate(() -> Array.get(propValue, index.getAndIncrement()))
+                    .limit(Array.getLength(propValue))
+                    .collect(Collectors.toList());
+          }
 
-        HttpQueryDelimited annotatedList = prop.findAnnotation(HttpQueryDelimited.class);
-        if (annotatedList != null) {
-          HttpQueryDelimitedSerializer serializer =
-              new HttpQueryDelimitedSerializer(
-                  propType,
-                  annotatedList.delimiter(),
-                  annotatedList.encodeDelimiter(),
-                  encodeValues);
-          gen.writeRaw(name);
-          gen.writeRaw("=");
-          serializer.serialize(collection, gen, provider);
-          return true;
+          HttpQueryDelimited annotatedList = prop.findAnnotation(HttpQueryDelimited.class);
+          if (annotatedList != null) {
+            HttpQueryDelimitedSerializer serializer =
+                new HttpQueryDelimitedSerializer(
+                    propType,
+                    annotatedList.delimiter(),
+                    annotatedList.encodeDelimiter(),
+                    encodeValues);
+            gen.writeRaw(name);
+            gen.writeRaw("=");
+            serializer.serialize(collection, gen, provider);
+            return;
+          } else {
+            HttpQueryCollectionSerializer serializer =
+                new HttpQueryCollectionSerializer(prop, encodeNames, encodeValues);
+            serializer.serialize(collection, gen, provider);
+            return;
+          }
         } else {
-          HttpQueryCollectionSerializer serializer =
-              new HttpQueryCollectionSerializer(prop, encodeNames, encodeValues);
-          serializer.serialize(collection, gen, provider);
-          return true;
+          Class<?> cls = propValue.getClass();
+          provider
+              .findTypedValueSerializer(cls, true, prop)
+              .serialize(propValue, valueGenerator, provider);
         }
-      } else {
-        Class<?> cls = propValue.getClass();
-        provider
-            .findTypedValueSerializer(cls, true, prop)
-            .serialize(propValue, valueGenerator, provider);
       }
-    }
 
-    String value = valueWriter.getBuffer().toString();
-    gen.writeRaw(name);
-    gen.writeRaw("=");
-    gen.writeRaw(encodeValues ? encode(value) : value);
-    return true;
+      String value = valueWriter.toString();
+      gen.writeRaw(name);
+      gen.writeRaw("=");
+      gen.writeRaw(encodeValues ? encode(value) : value);
+    }
   }
 
   private String encode(String value) throws UnsupportedEncodingException {

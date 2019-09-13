@@ -53,14 +53,14 @@ public class BooleanTest {
   @Test
   public void testFalsePrimitivesSerialization() throws JsonProcessingException {
     assertEquals(
-        "?paramB=false", objectMapper.writeValueAsString(new PrimitivePropertyQuery(false, false)));
+        "?paramB=false", objectMapper.valueToTree(new PrimitivePropertyQuery(false, false)).textValue());
   }
 
   @Test
   public void testTruePrimitiveSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA&paramB=true",
-        objectMapper.writeValueAsString(new PrimitivePropertyQuery(true, true)));
+        objectMapper.valueToTree(new PrimitivePropertyQuery(true, true)).textValue());
   }
 
   @Test
@@ -80,19 +80,19 @@ public class BooleanTest {
   @Test
   public void testFalseBoxedSerialization() throws JsonProcessingException {
     assertEquals(
-        "?paramB=false", objectMapper.writeValueAsString(new BoxedPropertyQuery(false, false)));
+        "?paramB=false", objectMapper.valueToTree(new BoxedPropertyQuery(false, false)).textValue());
   }
 
   @Test
   public void testTrueBoxedSerialization() throws JsonProcessingException {
     assertEquals(
-        "?paramA&paramB=true", objectMapper.writeValueAsString(new BoxedPropertyQuery(true, true)));
+        "?paramA&paramB=true", objectMapper.valueToTree(new BoxedPropertyQuery(true, true)).textValue());
   }
 
   @Test
   public void testNullBoxedSerialization() throws JsonProcessingException {
     assertEquals(
-        "?paramB=null", objectMapper.writeValueAsString(new BoxedPropertyQuery(null, null)));
+        "?paramB=null", objectMapper.valueToTree(new BoxedPropertyQuery(null, null)).textValue());
   }
 
   @Test

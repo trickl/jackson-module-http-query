@@ -39,14 +39,14 @@ public class NullsTest {
 
   @Test
   public void testExcludedNullParamSerialization() throws JsonProcessingException {
-    assertEquals("?paramB=123", objectMapper.writeValueAsString(new MultiPropertyQuery(null, 123)));
+    assertEquals("?paramB=123", objectMapper.valueToTree(new MultiPropertyQuery(null, 123)).textValue());
   }
 
   @Test
   public void testIncludedNullAsEmptyParamSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=valueA&paramB=null",
-        objectMapper.writeValueAsString(new MultiPropertyQuery("valueA", null)));
+        objectMapper.valueToTree(new MultiPropertyQuery("valueA", null)).textValue());
   }
 
   @Test

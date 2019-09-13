@@ -44,7 +44,7 @@ public class JsonIgnoreTest {
   public void testIgnoreParamSerialization() throws JsonProcessingException {
     assertEquals(
         "?paramA=valueA&paramC=123",
-        objectMapper.writeValueAsString(new MultiPropertyQuery("valueA", "valueB", 123)));
+        objectMapper.valueToTree(new MultiPropertyQuery("valueA", "valueB", 123)).textValue());
   }
 
   @Test
