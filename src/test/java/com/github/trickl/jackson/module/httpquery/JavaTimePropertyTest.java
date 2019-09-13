@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.trickl.jackson.module.httpquery.annotations.HttpQuery;
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -42,6 +43,18 @@ public class JavaTimePropertyTest {
     private LocalDate value;
   }
 
+
+  @HttpQuery
+  @NoArgsConstructor
+  @AllArgsConstructor
+  @EqualsAndHashCode
+  private static class JsonFormatEncodedQuery {
+    @JsonProperty("param")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+        pattern = "yyyy-MM-dd'T'HH:mm:ssX", timezone = "UTC")
+    private Instant value;
+  }
+
   @Test
   public void testStringParamSerialization() throws JsonProcessingException {
     assertEquals(
@@ -54,5 +67,19 @@ public class JavaTimePropertyTest {
     assertEquals(
         new JsonFormatQuery(LocalDate.parse("2013-01-31")),
         objectMapper.readValue("\"?param=2013-01-31\"", JsonFormatQuery.class));
+  }
+
+  @Test
+  public void testFormatEncodedSerialization() throws JsonProcessingException {
+    assertEquals(
+        "?param=2013-01-31T12%3A00%3A15Z",
+        objectMapper.valueToTree(new JsonFormatEncodedQuery(Instant.parse("2013-01-31T12:00:15Z"))).textValue());
+  }
+
+  @Test
+  public void testFormatEncodedDeserialization() throws IOException {
+    assertEquals(
+        new JsonFormatEncodedQuery(Instant.parse("2013-01-31T12:00:15Z")),
+        objectMapper.readValue("\"?param=2013-01-31T12%3A00%3A15Z\"", JsonFormatEncodedQuery.class));
   }
 }
