@@ -15,8 +15,8 @@ To install from Maven Central:
 ```xml
 <dependency>
   <groupId>com.github.trickl</groupId>
-  <artifactId>jackson-module-http-query</artifactId>
-  <version>1.0.0</version>
+  <artifactId>jackson-module-httpquery</artifactId>
+  <version>1.0.2</version>
 </dependency>
 ```
 ### Registering module
