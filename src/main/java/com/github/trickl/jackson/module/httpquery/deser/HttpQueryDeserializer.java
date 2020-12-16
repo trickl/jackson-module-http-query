@@ -45,7 +45,12 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
   private final boolean decodeNames;
   private final boolean decodeValues;
 
-  /** Create a deserializer for converting a Http query string to a typed object. */
+  /** Create a deserializer for converting a Http query string to a typed object.
+   * @param javaType The type to deserializer into.
+   * @param ignoreUnknown Whether to ignore unknown parameters
+   * @param decodeNames Should names be URL decoded
+   * @param decodeValues Should values be URL decoded
+   */
   public HttpQueryDeserializer(
       JavaType javaType, boolean ignoreUnknown, boolean decodeNames, boolean decodeValues) {
     super(Object.class);
@@ -120,7 +125,14 @@ public class HttpQueryDeserializer extends StdDeserializer<Object> {
     return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
   }
 
-  /** Set an object value using the supplied query param. */
+  /** Set an object value using the supplied query param.
+   * @param encodedValues The encoded values
+   * @param prop The property we are setting
+   * @param p The parser
+   * @param ctxt The deserialization context
+   * @param bean The bean that holds the property
+   * @throws IOException if unable to deserialize
+   */
   public void deserializeNameValue(
       List<String> encodedValues,
       SettableBeanProperty prop,

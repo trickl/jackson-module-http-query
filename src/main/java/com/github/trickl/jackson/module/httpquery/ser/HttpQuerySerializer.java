@@ -38,7 +38,12 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
   private final boolean encodeNames;
   private final boolean encodeValues;
 
-  /** Create a serializer for converting an object to an Http query string. */
+  /** Create a serializer for converting an object to an Http query string. 
+   * @param javaType the type to serialize
+   * @param includeQuestionMark whether to include a question mark at the start
+   * @param encodeNames whether to URL encode the name parts
+   * @param encodeValues whether to URL encode the value parts
+  */
   public HttpQuerySerializer(
       JavaType javaType, boolean includeQuestionMark, boolean encodeNames, boolean encodeValues) {
     super(Object.class);
@@ -80,7 +85,13 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
     gen.writeString(query);
   }
 
-  /** Write a property out as "name=value". */
+  /** Write a property out as "name=value".
+   * @param bean The bean owning the property
+   * @param prop The property itself
+   * @param provider The serializer
+   * @return The serialized value
+   * @throws Exception if the property cannot be written out
+   */
   public String writeNameValueAsString(
       Object bean, BeanPropertyWriter prop, SerializerProvider provider) throws Exception {
     StringWriter writer = new StringWriter();
@@ -88,7 +99,13 @@ public class HttpQuerySerializer extends StdSerializer<Object> {
     return writer.toString();
   }
 
-  /** Write a property out as "name=value". */
+  /** Write a property out as "name=value". 
+   * @param nameValueWriter The writer
+   * @param bean The current bean 
+   * @param prop The prop being introspected
+   * @param provider The serializer provider
+   * @throws Exception if the property cannot be written out
+  */
   public void writeNameValue(
       Writer nameValueWriter, Object bean, BeanPropertyWriter prop, SerializerProvider provider)
       throws Exception {

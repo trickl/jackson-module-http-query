@@ -50,7 +50,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.16.16</version>
+      <version>1.18.10</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -99,7 +99,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.3</version>
+        <version>3.8.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -189,6 +189,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>2.10.3</version>
+        <configuration>
+          <source>8</source>
+        </configuration>
         <executions>
             <execution>
                 <id>attach-javadocs</id>
@@ -201,12 +204,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.17</version>
+        <version>3.1.1</version>
         <dependencies>
           <dependency>
             <groupId>com.puppycrawl.tools</groupId>
             <artifactId>checkstyle</artifactId>
-            <version>8.18</version>
+            <version>8.29</version>
           </dependency>
         </dependencies>
         <executions>
@@ -267,7 +270,7 @@
           <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.8.1</version>
+            <version>0.8.6</version>
             <executions>
               <execution>
                 <id>prepare-agent</id>
@@ -327,7 +330,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson</groupId>
             <artifactId>jackson-bom</artifactId>
-            <version>2.9.9.20190807</version>
+            <version>2.10.0</version>
             <scope>import</scope>
             <type>pom</type>
         </dependency>

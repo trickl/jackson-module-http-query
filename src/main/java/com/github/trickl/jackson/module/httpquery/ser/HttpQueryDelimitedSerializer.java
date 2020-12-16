@@ -23,8 +23,10 @@ public class HttpQueryDelimitedSerializer extends StdSerializer<Collection<?>> {
 
   /**
    * Create a serializer for writing a list as a delimited query parameter.
-   *
+   * @param javaType the type to serialize
    * @param delimiter The delimiter
+   * @param encodeDelimiter Whether the delimiter should be url encoded
+   * @param encodeValues Whether the values should be URL encoded
    */
   public HttpQueryDelimitedSerializer(
       JavaType javaType, String delimiter, boolean encodeDelimiter, boolean encodeValues) {

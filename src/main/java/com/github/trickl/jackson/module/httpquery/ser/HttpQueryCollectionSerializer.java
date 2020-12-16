@@ -20,7 +20,11 @@ public class HttpQueryCollectionSerializer extends StdSerializer<Collection<?>> 
   private final boolean encodeNames;
   private final boolean encodeValues;
 
-  /** Create a serializer for converting an object to an Http query string. */
+  /** Create a serializer for converting an object to an Http query string.
+   * @param prop The property to serializer
+   * @param encodeNames Whether to URL encode the name part
+   * @param encodeValues Whether to URL encode the value part
+   */
   public HttpQueryCollectionSerializer(
       BeanPropertyWriter prop, boolean encodeNames, boolean encodeValues) {
     super((Class<Collection<?>>) prop.getPropertyType());
@@ -47,7 +51,14 @@ public class HttpQueryCollectionSerializer extends StdSerializer<Collection<?>> 
     }
   }
 
-  /** Write a property out as "name=value". */
+  /** Write a property out as "name=value".
+   * @param propValue The property value
+   * @param prop The property writer
+   * @param gen The json generator
+   * @param provider The serializer 
+   * @return true if a name=value pair was written
+   * @throws Exception if serialization failed
+   */
   public boolean serializeAsNameValue(
       Object propValue, BeanPropertyWriter prop, JsonGenerator gen, SerializerProvider provider)
       throws Exception {
