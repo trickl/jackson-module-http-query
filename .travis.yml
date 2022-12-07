@@ -1,6 +1,6 @@
 language: java
 jdk:
-- openjdk8
+- openjdk11
 env:
   global:
   - CC_TEST_REPORTER_ID=fc047cea122b36ad172d388e9ebe038eda328ae1aec4931139b7f8e1aff22b4f
@@ -34,7 +34,7 @@ deploy:
 - provider: releases
   skip_cleanup: true
   api_key:
-    secure: HwlULTmI+7vCZmWViJAYV7AZcvJyjp/K92LByi6115+JxvzRmEh3p/RnuW6rGOKMgRnMDABGA2bm8ujlnqh9DuXU4BIxKh/yM/AzNhelJIjVRbnL7q1zn7oWe838Uu5tTs2Mjvflhm1sNawfKQxk5/1NmleKfmBlh65+WG9jh2Q+EZfhu/FRAXHRQGtgGHfVC9KASE+JAi14C46XYQwIVOztWJLoUG/me/GROypRnjeiZPPPARZ/cQLN7kJKCYtCYYtwM7R3QFXLZ/qowdG5O/NzCOJnrCK6eknX679Ql5+hzD4hXGPAMjnwdcd0GdjbIVQ1m4KqJrmnziWBpwk9BVJGeHHPYGQR/GcGcVx/WwLOwxV5f/KshhbVKG9akwic4nyKK7x6WfDM4rxf9jQuYRHmLD00qIGx4U/tsfVLsz4uici8hpD1ieH4SS41MrEzDzbvUTlMxrMAxE/76vFruZHMth8NGHvodOlGuQefm3hWAG/JuwCa1BFSbxUcw5iIRlx2EqCHpd+Hqa31F43KuqX8fQ1FMQvnwcwashq9yhIV1KTNL1g0LzBpZy4ItLICIzW0k4cvMwswKblgwumfXnr7ETaqMJofwCke7cUkDAkfDMVvD1ETDpUwz20k7RmgRYJmrVvQBsbnGBSIA5+70ob4KyiUNMij2lD5hH5V0x0=
-  file: ".travis.yml"
+    secure: YGcXyBpVTfC1sH+/zXcOggnHZiszaWjJFUYSDbzXWyvEzTyvXkfns/Ym/9uhb4fLaYv03vdzzQuePCMHOkfoiYtYldEN+YxIqObdS+W29JuBhHJpM9Uw+Ncg7FjyBlJqiDOE2p6EaPwtZTqw9Qv7eJdOR7mLFK4myAaDdRR2ydUoQxPls9D5tyJHb7H6dY3GiCwPtKyU+kcgnDB+6zGAFKFwfkzML/o4X4TWQeszWU9q6BXRsMTBzRfs+aW5hDWafvakz4S6PcoZc/4WWKXAcG1KBQjoBxjPzUxmnXcGyNMPJdLyY0BcAaiaE8VS9oXSlMOY/8ifIHQ8kmfqmmZFJ8slgV7ob/DE0QT6lE1FoQETYEjsyuUJxWZ3kzRqfIcGiKbTE0bwhk+ygIyd2l8tZapSMXOCSRzaHFpDDengFfdvtRV33oKi+/HFdmR2j/bCjlPyw4qgRch7IY8PVAgL98iqsI1TCKXCFjoTifvGL7G703NzJlKTsrR2snSSgXJvSmJmvQoOjD2OU8gWlq++1hjAhKiUC96+TLneAQvZ2DNnSOrQhioyh7MHFXz8v98uah4bsG3IiHQ+GNwQKBecNvns0tSUMqfyKiHarF0GtdmxNgvmzKEt3jC0WNeILnCG1jMN9hZRkX/uoBS9h5X+f48S7coUGdQEMxVMDziUEHY=
+  file: "./target/jackson-module-http-query-$project_version.jar"
   on:
     repo: trickl/jackson-module-http-query
